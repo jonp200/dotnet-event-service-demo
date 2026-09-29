@@ -1,0 +1,11 @@
+﻿namespace EventService.Application.Debits;
+
+public enum DebitStatus
+{
+    Applied,
+    InsufficientFunds,
+    ConflictingRequest,
+    AccountNotFound
+}
+
+public sealed record ProcessDebitOutcome(Guid RequestId, DebitStatus Status, long? BalanceMinorUnits = null);
