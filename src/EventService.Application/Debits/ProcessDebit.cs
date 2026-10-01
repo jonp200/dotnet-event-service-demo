@@ -1,20 +1,28 @@
-﻿using EventService.Application.Repositories;
-using EventService.Domain.Entities;
+﻿using EventService.Domain.Entities;
 
 namespace EventService.Application.Debits;
 
-public class ProcessDebit(IAccountStore store)
+public class ProcessDebit(IDebitUnitOfWorkFactory unitOfWorkFactory)
 {
-    public async Task<DebitResult> ExecuteAsync(Guid accountId, Guid requestId, long amount, CancellationToken ct)
+    public async Task<ProcessDebitOutcome> ExecuteAsync(ProcessDebitCommand command, CancellationToken ct)
     {
-        var account = await store.FindById(accountId, ct);
+        await using var tx = await unitOfWorkFactory.BeginAsync(ct);
 
-        var result = account.Debit(amount);
-        if (result == DebitResult.InsufficientFunds)
-            return result;
+        var account = await tx.GetAccountForUpdateAsync(command.AccountId, ct);
+        if (account is null)
+            return new ProcessDebitOutcome(DebitStatus.AccountNotFound);
 
-        await store.UpdateBalance(account.Id, amount, ct);
+        var debitResult = account.Debit(command.AmountMinorUnits);
 
-        return result;
+        var outcome = new ProcessDebitOutcome(
+            debitResult == DebitResult.Applied
+                ? DebitStatus.Applied
+                : DebitStatus.InsufficientFunds,
+            account.BalanceMinorUnits);
+
+        if (debitResult == DebitResult.Applied)
+            await tx.SaveAccountAsync(account, ct);
+
+        return outcome;
     }
 }

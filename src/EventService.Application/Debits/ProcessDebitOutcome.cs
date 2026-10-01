@@ -8,4 +8,4 @@ public enum DebitStatus
     AccountNotFound
 }
 
-public sealed record ProcessDebitOutcome(Guid RequestId, DebitStatus Status, long? BalanceMinorUnits = null);
+public sealed record ProcessDebitOutcome(DebitStatus Status, long? BalanceMinorUnits = null);

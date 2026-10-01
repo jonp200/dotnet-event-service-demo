@@ -1,5 +1,5 @@
-﻿using EventService.Api.Requests;
-using EventService.Application.Debits;
+﻿using EventService.Application.Debits;
+using EventService.Application.Requests;
 
 namespace EventService.Api.Endpoints;
 
@@ -15,7 +15,11 @@ public static class AccountEndpoints
             if (errors.Count != 0)
                 return Results.UnprocessableEntity(errors);
 
-            var outcome = await useCase.ExecuteAsync(accountId, request.RequestId, request.AmountMinorUnits, ct);
+            var outcome = await useCase.ExecuteAsync(
+                new ProcessDebitCommand(
+                    accountId,
+                    request.AmountMinorUnits),
+                ct);
 
             return Results.Ok(outcome);
         });

@@ -4,3 +4,11 @@ GET {{Api_HostAddress}}/
 Accept: application/json
 
 ###
+
+POST {{Api_HostAddress}}/accounts/20528c0b-1c16-40f0-a7c2-41764b5c1401/debits
+Accept: application/json
+Content-Type: application/json
+
+{
+    "amount_minor_units": 100
+}
