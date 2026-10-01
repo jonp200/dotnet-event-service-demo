@@ -16,12 +16,7 @@ public class DebitUnitOfWork(InMemoryStore store, ILogger logger) : IDebitUnitOf
 
     public Task SaveAccountAsync(Account account, CancellationToken ct)
     {
-        var targetAccount = store.Accounts.FirstOrDefault(x => x.Id == account.Id);
-        if (targetAccount == null)
-            throw new InvalidOperationException($"Account with id {account.Id} does not exist");
-
-        targetAccount.BalanceMinorUnits = account.BalanceMinorUnits;
-        targetAccount.UpdatedAt = account.UpdatedAt;
+        logger.Information("`{0}` is not necessary to call with in-memory store", nameof(SaveAccountAsync));
 
         return Task.CompletedTask;
     }
