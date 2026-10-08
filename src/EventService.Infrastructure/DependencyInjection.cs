@@ -1,5 +1,4 @@
-﻿using EventService.Application.Debits;
-using EventService.Infrastructure.Debits;
+using EventService.Application.Persistence;
 using EventService.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,8 +8,8 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IServiceCollection services)
     {
+        // Use in-memory store for early-stage development
         services.AddSingleton<InMemoryStore>();
-        
-        services.AddScoped<IDebitUnitOfWorkFactory, DebitUnitOfWorkFactory>();
+        services.AddScoped<IAppDbContext, InMemoryAppDbContext>();
     }
 }
